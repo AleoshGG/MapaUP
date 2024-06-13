@@ -28,7 +28,7 @@ export class LinkedList {
     if (index >= 0 && index < this.#count) {
       let node = this.#head;
       for (let i = 0; i < index && node != null; i++) node = node.next;
-      return node;
+      return node.getData().getName();
     }
     return undefined;
   }
@@ -41,12 +41,11 @@ export class LinkedList {
     return this.#count;
   }
 
-  recorrer(index, callback) {
+  recorrer(index) {
     if (index >= 0 && index < this.#count) {
       let node = this.getElementAt(index);
       for (let i = index; i < this.#count; i++) {
-        callback(node);
-        node = node.next;
+        return node;
       }
     }
   }

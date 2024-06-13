@@ -10,10 +10,17 @@ btnAdd.addEventListener("click", () => {
   let lugar = document.getElementById("nombreLugar").value;
   let lugar2 = "B";
   graph.addV(lugar);
+  graph.addV(lugar2);
+  graph.addV("C");
+  graph.addV("D");
+  graph.addV("F");
+  
 
-  console.log(graph.addV(lugar2));
+  graph.addConexion(lugar, lugar2, 5);
+  graph.addConexion(lugar2, "D", 5);
+  graph.addConexion(lugar2, "F", 5);
+  graph.addConexion(lugar, "C", 5);
 
-  console.log(graph.addConexion(lugar, lugar2, 5));
-  graph.bfs(imprimir);
+  graph.dfs("A", imprimir);
   
 });

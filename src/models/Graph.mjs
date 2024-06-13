@@ -3,7 +3,7 @@ import { LinkedList } from "./linkedList/LinkedLlist.mjs";
 export default class Graph {
   #listaAdyacencia = [];
   #map = new Map();
-
+  #visit = new Set();
   constructor() {}
 
   addV(value) {
@@ -15,34 +15,23 @@ export default class Graph {
   addConexion(start, end, distance = 1) {
     if (this.#map.has(start) && this.#map.has(end)) {
       this.#listaAdyacencia[this.#map.get(start)].push(end, distance);
+      this.#listaAdyacencia[this.#map.get(end)].push(start, distance); //No dirigido
       return true;
     }
     return false;
   }
 
-  bfs(callback) {
-    let queue = [];
-    let list = [];
-    const entries = [...structuredClone(this.#map)];
-    for (let i = 0; i < this.#listaAdyacencia.length; i++) list[i] = false;
+  dfs(start, callback) {
+    this.#visit.add(start);
+    callback(start);
 
-    let [key] = entries[0];
-    queue.push(key);
-
-    while (queue.length > 0) {
-      let val = queue.shift(); //Sacamos el primer elemento de la cola
-      callback(val); //Imprimimos el valor
-      list[this.#map.get(val)] = true; //Marcamos de visitado
-      for (
-        let i = 0;
-        i < this.#listaAdyacencia[this.#map.get(val)].length;
-        i++
-      ) {
-        if (this.#listaAdyacencia[this.#map.get(val)][i]) {
-          let [key] = entries[i];
-          if (!list[this.#map.get(key)] && !queue.includes(key))
-            queue.push(key); //Agregamos los vecinos a la cola
-        }
+    let list = this.#listaAdyacencia[this.#map.get(start)]; //lista adyacente al nodo
+    
+    for (let i = 0; i < list.size(); i++) {
+      let v = list.getElementAt(i);
+      if (!this.#visit.has(v)) {
+        this.#visit.add(v);
+        this.dfs(v, callback);
       }
     }
   }
