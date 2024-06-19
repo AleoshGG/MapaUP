@@ -1,26 +1,42 @@
 import graph from "./dependences.mjs";
 
 let i = 1;
+let nombresLugares = [];
 
 //Obtengo mis elementos del HTML
 let btnAddNode = document.getElementById("addNode");
 let btnAddEdge = document.getElementById("addEdge");
 let btnStartR = document.getElementById("startR");
 let btnReloadR = document.getElementById("reloadR");
+let btnDijkstra = document.getElementById("dijkstra");
+let btnReloadD = document.getElementById("reloadD");
 
 //TODO para agregar nodos al grafo
 btnAddNode.addEventListener("click", () => {
   let lugar = document.getElementById("nombreLugar").value;
 
   if (lugar == "" || lugar == " ") {
-    let alertPlaceholder = document.getElementById("liveAlertPlaceholder");
-    appendAlert("Datos Incorrectos", "success", alertPlaceholder);
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: "Revise la entrada de datos",
+      showConfirmButton: false,
+      timer: 1500,
+    });
   } else {
     if (graph.addV(lugar)) {
-      alert("¡Éxito en la operación!");
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Agregado Correctamente",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      nombresLugares.push(lugar);
       crearSelect(lugar, "edgeOne");
       crearSelect(lugar, "edgeTwo");
       crearSelect(lugar, "edgeThree");
+      crearSelect(lugar, "edgeFour");
     }
   }
 
@@ -46,10 +62,21 @@ btnAddEdge.addEventListener("click", () => {
 
   if ((start, end != "default" && distance >= 0)) {
     graph.addConexion(start, end, distance);
-    alert("¡Éxito en la operación!");
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "Agregado Correctamente",
+      showConfirmButton: false,
+      timer: 1500,
+    });
   } else {
-    let alertPlaceholder = document.getElementById("liveAlertPlace");
-    appendAlert("Datos Incorrectos", "success", alertPlaceholder);
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: "Elija los lugares",
+      showConfirmButton: false,
+      timer: 1500,
+    });
   }
 
   document.getElementById("edgeOne").selectedIndex = 0;
@@ -65,8 +92,13 @@ btnStartR.addEventListener("click", () => {
     graph.dfs(start, agregar);
     graph.getVisit().clear();
   } else {
-    let alertPlaceholder = document.getElementById("liveAlert");
-    appendAlert("Elija un lugar", "success", alertPlaceholder);
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: "Revise la entrada de datos",
+      showConfirmButton: false,
+      timer: 1500,
+    });
   }
 
   document.getElementById("edgeThree").selectedIndex = 0;
@@ -90,8 +122,6 @@ let agregar = (nombre) => {
   cuerpoTabla.appendChild(tr);
 };
 
-
-
 //TODO para reiniciar el recorrido
 btnReloadR.addEventListener("click", () => {
   i = 1;
@@ -103,15 +133,55 @@ btnReloadR.addEventListener("click", () => {
   }
 });
 
-//Alerta
-const appendAlert = (message, type, alertPlaceholder) => {
-  const wrapper = document.createElement("div");
-  wrapper.innerHTML = [
-    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-    `   <div>${message}</div>`,
-    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-    "</div>",
-  ].join("");
+//TODO para iniciar Dijkstra
+btnDijkstra.addEventListener("click", () => {
+  let start = document.getElementById("edgeFour").value;
 
-  alertPlaceholder.append(wrapper);
+  if (start != "default"){
+    let nodos = graph.dijkstra(start);
+  mostrarRutas(nodos);
+  } else {
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: "Elija un lugar",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  }
+});
+
+//Imprimir las rutas en el archivo
+let mostrarRutas = (nodos) => {
+  let cuerpoTabla = document.getElementById("cuerpoTabla");
+  let i = 0;
+  let j = 0;
+
+  nombresLugares.forEach(() => {
+    let tr = document.createElement("tr");
+    tr.className = "rows2";
+
+    let nombre = document.createElement("td");
+    nombre.textContent = nombresLugares[i];
+    i++;
+    tr.appendChild(nombre);
+
+    let nodo = document.createElement("td");
+    nodo.textContent = nodos[j];
+    j++;
+    tr.appendChild(nodo);
+
+    cuerpoTabla.appendChild(tr);
+  });
 };
+
+//TODO para reiniciar el dijkstra
+btnReloadD.addEventListener("click", () => {
+  i = 1;
+  let cuerpoTabla = document.getElementById("cuerpoTabla");
+
+  for (let i = 0; i < graph.size(); i++) {
+    let rows = document.querySelector(".rows2");
+    cuerpoTabla.removeChild(rows);
+  }
+});
